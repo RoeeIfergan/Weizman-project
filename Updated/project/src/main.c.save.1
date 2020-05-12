@@ -1,0 +1,63 @@
+/*
+        This Will be the Client side
+*/
+
+#include <stdlib.h>
+#include <stdio.h>
+#include <gtk/gtk.h>
+//Client
+#include "../../second.c"
+//Server
+//#include "../../server.c"
+int sock;
+int main(int argc, char *argv[])
+{
+	GtkBuilder      *builder;
+	GtkWidget       *window;
+
+	
+
+	gtk_init(&argc, &argv);
+
+	// builder = gtk_builder_new();
+	// gtk_builder_add_from_file (builder, "glade/window_main.glade", NULL);
+	// Update October 2019: The line below replaces the 2 lines above
+	builder = gtk_builder_new_from_file("glade/window_main.glade");
+
+	window = GTK_WIDGET(gtk_builder_get_object(builder, "window_main"));
+	gtk_builder_connect_signals(builder, NULL);
+
+	//g_object_unref(builder);
+
+	gtk_widget_show(window);
+
+	//start client side
+	sock = startClient();
+	if(sock < 0) {
+		printf("PROGRAM ERROR: Client did not launch!\n");
+		exit(0);
+	}
+
+
+	while(1==1) {
+		//FALSE = Do not block
+		gtk_main_iteration_do(FALSE);
+	}
+	//gtk_main();
+	return 0;
+}
+
+// called when window is closed
+void on_window_main_destroy()
+{
+	gtk_main_quit();
+	closeClientSock(sock);
+	
+	exit(0);
+}
+
+void send_button_clicked() {
+	printf("Send Button Works!");
+}
+
+void update
