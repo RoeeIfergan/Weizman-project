@@ -56,7 +56,7 @@
 //#include  "roee_gcm_test.h"
 #define BUFSIZE         2048
 #define keySize		128
-
+#define KEY_LEN 32
 
 /*
 	Functions
@@ -69,13 +69,13 @@ int getKey(unsigned char * keyP, const unsigned char* pass) {
 
 	//initializing the context struct
 	mbedtls_md_context_t sha256_ctx;
-	printf("sha1 context created\n");
+	printf("sha2 context created\n");
 
 	const mbedtls_md_info_t *info_sha256;
 
 	//initzializing the mbedtls_md_init
 	mbedtls_md_init( &sha256_ctx );
-	printf("sha1 init created\n");
+	printf("sha256 init created\n");
 
 	//valHashPass validates the password hashing
 	int valHashPass;
@@ -95,7 +95,7 @@ int getKey(unsigned char * keyP, const unsigned char* pass) {
 	//unsigned char * keyP = key;
 
 	//key length
-	uint32_t keyLen = 256;
+//	uint32_t keyLen = 256;
 
 	//password to hash for key
 	//const unsigned char* pass = "pass123";
@@ -116,16 +116,16 @@ int getKey(unsigned char * keyP, const unsigned char* pass) {
 		return -1;
 	}
 
-	//if info_sha1 is NULL, it is created and checked
+	//if info_sha256 is NULL, it is created and checked
 	if( ( valHashPass = mbedtls_md_setup( &sha256_ctx, info_sha256, 1 ) ) != 0 )
 	{
-		printf("ERROR: Initializing info_sha1 failed!\n");
+		printf("ERROR: Initializing info_sha2 failed!\n");
 		return -1;
 	}
 
 
 	//hashing password into key
-	valHashPass = mbedtls_pkcs5_pbkdf2_hmac(&sha256_ctx, pass, passLen, salt, saltLen, iterations, keyLen, keyP);
+	valHashPass = mbedtls_pkcs5_pbkdf2_hmac(&sha256_ctx, pass, passLen, salt, saltLen, iterations, KEY_LEN, keyP);
 
 	//if hashing failed quit
 	if(valHashPass != 0) {
@@ -220,14 +220,14 @@ void Decrypt(unsigned char * bufOutput, char bufInput[], int bufSize, unsigned c
 int main() {
 
 	//key - must be 128 bits long
-	unsigned char key[512];
-	bzero(key, 512);
+	unsigned char key[KEY_LEN];
+	bzero(key, KEY_LEN);
 	//pointer to key
 	unsigned char * keyP = key;
 
 	getKey(keyP, "000");
 
-	unsigned char key2[128];
+//	unsigned char key2[128];
 	//sprintf(key2, "%02x", key2);
 	//printing password
 	int cnt = 0;
@@ -236,18 +236,11 @@ int main() {
 	unsigned char temp;
 	unsigned char * tempP = &temp;
 	//sprintf(temp, "%x", key[i];
-	for(int i = 0; i < 512;i++) {
-		printf("%x", key[i]);
-		sprintf(tempP, "%x", key[i]);
+	for(int i = 0; i < KEY_LEN;i++) {
+		printf("%hhx ", key[i]);
+//		sprintf(tempP, "%x", key[i]);
 		if(temp != '0')
 			cnt++;
-		if(temp == '0') {
-			if(check == 0)
-				cnt2 = 0;
-			cnt2++;
-			if(cnt == 10)
-				break;
-		}
 	}
 	printf("\n");
 	printf("cnt: %d\n", cnt);
